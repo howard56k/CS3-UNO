@@ -11,7 +11,7 @@ class Player:
     def pickUpCard(self,card):
         self.deck.returnCardFromDeck
     def getAmountOfCards(self):
-        pass
+        return len(self.deck)
 
 class Board:
     def __init__(self,players,deck):
@@ -107,7 +107,11 @@ class Uno:
     def placeCard(self,card):
         self.board.cardsPlacedDeck(card)
     def checkIfWinner(self):
-        pass
+        for player in self.listOfPlayers:
+            if player.getAmountOfCards() == 0:
+                return player
+            else:
+                return None
     
 
 
