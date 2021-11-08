@@ -6,51 +6,30 @@ class Player:
         return (len(self.deck))
     def putDownCard(self):
         return self.deck
-    def pickUpCard(self):
-        pass
+    def addCard(self,card):
+        self.deck.addToDeck(card)
+    def pickUpCard(self,card):
+        self.deck.returnCardFromDeck
     def getAmountOfCards(self):
         pass
 
-
-class Uno:
-    def __init__(self,playerCount,startingCardCount):
-        self.playerCount = playerCount
-        self.startingCardCount = startingCardCount
-        self.generateAllCards()
-        self.generatePlayersandDeck()
-    def generatePlayersandDeck(self):
-        players = []
-        for player in range(self.playerCount):
-            player.append(Player(deck))
-    def generateAllCards(self):
-        cardColors = ['blue','green','yellow','red']
-        cards = []
-        for i in range(4):
-            cards.append(Card('color_changer','wild'))
-            cards.append(Card('pick_four','wild'))
-        for cardColor in cardColors:
-            for i in range(2):
-                cards.append(Card('picker',cardColor))
-                cards.append(Card('reverse',cardColor))
-                cards.append(Card('skip',cardColor))
-            for i in range(10):
-                if i != 0:
-                    cards.append(Card(i,cardColor))
-                cards.append(Card(i,cardColor))
-        self.allCards = Deck(cards)
-
-
 class Board:
-    def __init__(self):
-        pass
+    def __init__(self,players,deck):
+        self.players = players
+        self.deck = deck
+        self.placedDeck = Deck([])
     def getDeck(self):
-        pass
+        return self.deck
+    def cardsPlacedDeck(self,card):
+        self.placedDeck.addToDeck(card)
     def returnCardFromDeck(self):
-        pass
+        if len(self.deck) == 0:
+            self.deck = random.shuffle(self.placedDeck.deck[:-1])
+            self.placedDeck.deck = list(self.placedDeck.deck[-1])
+        return self.deck.returnCard()
     def playerOrder(self):
         pass
-    def checkIfWinner(self):
-        pass
+    
 
 class Deck:
     def __init__(self,cards):
@@ -92,3 +71,43 @@ class Card:
         return self.placement
     def cardFileAsset(self):
         return self.asset
+
+class Uno:
+    def __init__(self,playerCount,startingCardCount):
+        self.playerCount = playerCount
+        self.startingCardCount = startingCardCount
+        self.generateAllCards()
+        self.generatePlayersandDeck()
+    def generatePlayersandDeck(self):
+        self.allCards.shuffleDeck()
+        self.listOfPlayers = []
+        for player in range(self.playerCount):
+            playerDeck = Deck([])
+            for count in range(self.startingCardCount):
+                playerDeck.addToDeck(self.allCards.returnCard())
+            self.listOfPlayers.append(Player(playerDeck))
+        self.tableDeck = self.allCards
+        self.board = Board(self.listOfPlayers,self.tableDeck)
+    def generateAllCards(self):
+        cardColors = ['blue','green','yellow','red']
+        cards = []
+        for i in range(4):
+            cards.append(Card('color_changer','wild'))
+            cards.append(Card('pick_four','wild'))
+        for cardColor in cardColors:
+            for i in range(2):
+                cards.append(Card('picker',cardColor))
+                cards.append(Card('reverse',cardColor))
+                cards.append(Card('skip',cardColor))
+            for i in range(10):
+                if i != 0:
+                    cards.append(Card(i,cardColor))
+                cards.append(Card(i,cardColor))
+        self.allCards = Deck(cards)
+    def placeCard(self,card):
+        self.board.cardsPlacedDeck(card)
+    def checkIfWinner(self):
+        pass
+    
+
+
