@@ -1,83 +1,109 @@
 import random
+
+
 class Player:
-    def __init__(self,deck):
+    def __init__(self, deck):
         self.deck = deck
+
     def getAvailableCards(self):
         return (len(self.deck))
+
     def putDownCard(self):
         return self.deck
-    def addCard(self,card):
+
+    def addCard(self, card):
         self.deck.addToDeck(card)
-    def pickUpCard(self,card):
+
+    def pickUpCard(self, card):
         self.deck.returnCardFromDeck
+
     def getAmountOfCards(self):
         return len(self.deck)
 
+
 class Board:
-    def __init__(self,players,deck):
+    def __init__(self, players, deck):
         self.players = players
         self.deck = deck
         self.placedDeck = Deck([])
+
     def getDeck(self):
         return self.deck
-    def cardsPlacedDeck(self,card):
+
+    def cardsPlacedDeck(self, card):
         self.placedDeck.addToDeck(card)
+
     def returnCardFromDeck(self):
         if len(self.deck) == 0:
             self.deck = random.shuffle(self.placedDeck.deck[:-1])
             self.placedDeck.deck = list(self.placedDeck.deck[-1])
         return self.deck.returnCard()
+
     def playerOrder(self):
         pass
-    
+
 
 class Deck:
-    def __init__(self,cards):
+    def __init__(self, cards):
         self.deck = cards
+
     def getDeckSize(self):
         return len(self.deck)
-    def getCardFromDeck(self,card):
+
+    def getCardFromDeck(self, card):
         for cardI in range(len(self.deck)):
             if card == self.deck[cardI]:
                 self.removeFromDeck(cardI)
                 return card
         return self.deck
-    def removeFromDeck(self,index):
+
+    def removeFromDeck(self, index):
         self.deck.pop(index)
-    def returnCard(self,card=None):
+
+    def returnCard(self, card=None):
         if card == None:
             return self.deck.pop()
         else:
             return self.getCardFromDeck(card)
-    def addToDeck(self,card):
+
+    def addToDeck(self, card):
         return self.deck.append(card)
+
     def shuffleDeck(self):
         self.deck = random.shuffle(self.deck)
 
+
 class Card:
-    def __init__(self,number,color, placement = None):
+    def __init__(self, number, color, placement=None):
         self.number = number
         self.color = color
         self.placement = placement
-        self.asset = ('./uno_assets_2d/PNGs/small/{}_{}.png'.format(color,number))
+        self.asset = ('./uno_assets_2d/PNGs/small/{}_{}.png'.format(color, number))
+
     def __eq__(self, other):
         if (isinstance(other, C)):
             return (self.number == other.number) and (self.color == other.color)
+
     def getCardNumber(self):
         return self.number
+
     def getCardColor(self):
         return self.color
+
     def cardPlacement(self):
         return self.placement
+
     def cardFileAsset(self):
         return self.asset
 
+
 class Uno:
-    def __init__(self,playerCount,startingCardCount):
+    def __init__(self, playerCount, startingCardCount):
         self.playerCount = playerCount
         self.startingCardCount = startingCardCount
         self.generateAllCards()
         self.generatePlayersandDeck()
+
     def generatePlayersandDeck(self):
         self.allCards.shuffleDeck()
         self.listOfPlayers = []
@@ -87,31 +113,31 @@ class Uno:
                 playerDeck.addToDeck(self.allCards.returnCard())
             self.listOfPlayers.append(Player(playerDeck))
         self.tableDeck = self.allCards
-        self.board = Board(self.listOfPlayers,self.tableDeck)
+        self.board = Board(self.listOfPlayers, self.tableDeck)
+
     def generateAllCards(self):
-        cardColors = ['blue','green','yellow','red']
+        cardColors = ['blue', 'green', 'yellow', 'red']
         cards = []
         for i in range(4):
-            cards.append(Card('color_changer','wild'))
-            cards.append(Card('pick_four','wild'))
+            cards.append(Card('color_changer', 'wild'))
+            cards.append(Card('pick_four', 'wild'))
         for cardColor in cardColors:
             for i in range(2):
-                cards.append(Card('picker',cardColor))
-                cards.append(Card('reverse',cardColor))
-                cards.append(Card('skip',cardColor))
+                cards.append(Card('picker', cardColor))
+                cards.append(Card('reverse', cardColor))
+                cards.append(Card('skip', cardColor))
             for i in range(10):
                 if i != 0:
-                    cards.append(Card(i,cardColor))
-                cards.append(Card(i,cardColor))
+                    cards.append(Card(i, cardColor))
+                cards.append(Card(i, cardColor))
         self.allCards = Deck(cards)
-    def placeCard(self,card):
+
+    def placeCard(self, card):
         self.board.cardsPlacedDeck(card)
+
     def checkIfWinner(self):
         for player in self.listOfPlayers:
             if player.getAmountOfCards() == 0:
                 return player
             else:
                 return None
-    
-
-
