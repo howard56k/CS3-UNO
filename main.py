@@ -1,8 +1,8 @@
 from UNO import *
 from FrontEnd import *
-global player_num
+global player_headcount
 game_intro()
 game_menu()
-New_game = Uno(player_num, 7)
-ready_menu(player_num)
+New_game = Uno(player_headcount, 7)
+ready_menu()
 display_cards()
