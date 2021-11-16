@@ -75,7 +75,8 @@ class Deck:
 
 
 class Card:
-    def __init__(self, number, color, placement=None):
+    def __init__(self, number, color, special=False, placement=None):
+        self.special = special
         self.number = number
         self.color = color
         self.placement = placement
@@ -93,7 +94,15 @@ class Card:
 
     def cardPlacement(self):
         return self.placement
-
+    def isCardPlaceable(self, card):
+        if card.special == True:
+            return True
+        elif card.color == self.color:
+            return True
+        elif card.number == card.number:
+            return True
+        else:
+            return False
     def cardFileAsset(self):
         return self.asset
 
@@ -120,8 +129,8 @@ class Uno:
         cardColors = ['blue', 'green', 'yellow', 'red']
         cards = []
         for i in range(4):
-            cards.append(Card('color_changer', 'wild'))
-            cards.append(Card('pick_four', 'wild'))
+            cards.append(Card('color_changer', 'wild',special=True))
+            cards.append(Card('pick_four', 'wild', special=True))
         for cardColor in cardColors:
             for i in range(2):
                 cards.append(Card('picker', cardColor))
