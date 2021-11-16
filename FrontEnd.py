@@ -1,7 +1,7 @@
 import sys
 import pygame
+import config
 from pygame.locals import *
-from UNO import *
 
 pygame.init()
 print(pygame.font.get_fonts())
@@ -29,8 +29,8 @@ BIG_FONT = pygame.font.SysFont('franklingothicheavy', 50)
 clicked = False
 winner = False
 player_num = 1
-#How many players there are
-player_headcount = 0
+# How many players there are
+
 # Set icon and caption
 
 icon = pygame.image.load('uno_assets_2d/PNGs/small/uno_logo.png')
@@ -40,7 +40,7 @@ pygame.display.set_caption("UNO!")
 
 # Create a button class that handles all of the buttons created in the game
 
-class button():
+class button:
     # button class variables
     text_color = BLACK
     width = 180
@@ -82,9 +82,7 @@ class button():
                 text_len = text_img.get_width()
                 WIN.blit(text_img, (self.x + int(self.width / 2) - int(text_len / 2), self.y + 20))
 
-
-
-            elif pygame.mouse.get_pressed()[0] == 0 and clicked == True:
+            elif pygame.mouse.get_pressed()[0] == 0 and clicked:
                 clicked = False
                 action = True
                 # add shading to button
@@ -162,7 +160,6 @@ FOUR_PLAYERS = button(WIDTH // 2 + 200, HEIGHT // 2, "4 Players", GREY, LIGHT_GR
 
 
 def game_menu():
-    global player_headcount
     intro = True
     while intro:
         WIN.fill(DARK_RED)
@@ -173,15 +170,15 @@ def game_menu():
         text = BIG_FONT.render('How many players?', True, BLACK)
         WIN.blit(text, (WIDTH // 2 - 250, HEIGHT // 2 - 250))
         if TWO_PLAYERS.draw_button():
-            player_headcount = 2
+            config.player_headcount = 2
             WIN.fill(DARK_RED)
             intro = False
         if THREE_PLAYERS.draw_button():
-            player_headcount = 3
+            config.player_headcount = 3
             WIN.fill(DARK_RED)
             intro = False
         if FOUR_PLAYERS.draw_button():
-            player_headcount = 4
+            config.player_headcount = 4
             WIN.fill(DARK_RED)
             intro = False
         pygame.display.update()
@@ -213,7 +210,7 @@ def ready_menu():
 
 
 # def display_cards(top_card, player ):
-def display_cards():
+def display_cards(Players):
     image = pygame.image.load('uno_assets_2d/PNGs/small/card_back.png')
     loop = True
     while loop:
@@ -225,65 +222,146 @@ def display_cards():
         # Display with 2 people
         arrowA = pygame.image.load('uno_assets_2d/PNGs/large/Arrow.png')
         arrowA = pygame.transform.rotate(arrowA, 270)
-        WIN.blit(arrowA, (750,400))
+        WIN.blit(arrowA, (750, 400))
         arrowB = pygame.transform.flip(arrowA, True, True)
         WIN.blit(arrowB, (450, 400))
 
-        if player_headcount == 2:
+        # print the active players deck of cards
+        split = 1500 // Players[player_num - 1].getAmountOfCards()
+        for i in range(Players[player_num - 1].getAmountOfCards()):
+            print(Players[player_num].deck.deck[i].getCardColor())
+            print(Players[player_num].deck.deck[i].getCardNumber())
+            card = pygame.image.load(Players[player_num].deck.deck[i].cardFileAsset())
+            WIN.blit(card, (split, 800))
+            split += 150
+
+        # Print the board for only two players playing
+        if config.player_headcount == 2:
             image = pygame.transform.flip(image, True, True)
-            WIN.blit(image, (500, 100))
-            WIN.blit(image, (550, 100))
-            WIN.blit(image, (600, 100))
-            WIN.blit(image, (650, 100))
-            WIN.blit(image, (700, 100))
-            WIN.blit(image, (750, 100))
-            WIN.blit(image, (800, 100))
+            A, B = 500, 100
+            # print the other players cards face down
+            if player_num == 1:
+
+                for i in range(Players[1].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    A += 50
+            else:
+                for i in range(Players[0].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    A += 50
 
         # Display with three people
-        if player_headcount == 3 :
+        if config.player_headcount == 3:
+            A, B = 100, 300
+            C, D = 1200, 300
+            if player_num == 1:
+                image = pygame.transform.rotate(image, 270)
+                for i in range(Players[1].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[2].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    D += 50
+            elif player_num == 2:
+                image = pygame.transform.rotate(image, 270)
+                for i in range(Players[0].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[2].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    D += 50
 
-            image = pygame.transform.rotate(image, 270)
-            WIN.blit(image, (100, 300))
-            WIN.blit(image, (100, 350))
-            WIN.blit(image, (100, 400))
-            WIN.blit(image, (100, 450))
-            WIN.blit(image, (100, 500))
-            WIN.blit(image, (100, 550))
-            WIN.blit(image, (100, 600))
-            image = pygame.transform.rotate(image, 180)
-            WIN.blit(image, (1200, 300))
-            WIN.blit(image, (1200, 350))
-            WIN.blit(image, (1200, 400))
-            WIN.blit(image, (1200, 450))
-            WIN.blit(image, (1200, 500))
-            WIN.blit(image, (1200, 550))
-            WIN.blit(image, (1200, 600))
+            elif player_num == 3:
+                image = pygame.transform.rotate(image, 270)
+                for i in range(Players[1].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[0].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    D += 50
 
         # Display for 4 people
-        if player_headcount == 4:
-            WIN.blit(image, (500, 100))
-            WIN.blit(image, (550, 100))
-            WIN.blit(image, (600, 100))
-            WIN.blit(image, (650, 100))
-            WIN.blit(image, (700, 100))
-            WIN.blit(image, (750, 100))
-            WIN.blit(image, (800, 100))
-            image = pygame.transform.rotate(image, 90)
-            WIN.blit(image, (1200, 300))
-            WIN.blit(image, (1200, 350))
-            WIN.blit(image, (1200, 400))
-            WIN.blit(image, (1200, 450))
-            WIN.blit(image, (1200, 500))
-            WIN.blit(image, (1200, 550))
-            WIN.blit(image, (1200, 600))
-            image = pygame.transform.rotate(image, 180)
-            WIN.blit(image, (100, 300))
-            WIN.blit(image, (100, 350))
-            WIN.blit(image, (100, 400))
-            WIN.blit(image, (100, 450))
-            WIN.blit(image, (100, 500))
-            WIN.blit(image, (100, 550))
-            WIN.blit(image, (100, 600))
+        if config.player_headcount == 4:
+            A, B = 100, 300
+            C, D = 500, 100
+            E, F = 1200, 300
+
+            if player_num == 1:
+                # player to the right
+
+                for i in range(Players[3].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+
+                # player at the top
+                image = pygame.transform.rotate(image, 90)
+                for i in range(Players[2].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    C += 50
+
+                # Player to the left
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[1].getAmountOfCards()):
+                    WIN.blit(image, (E, F))
+                    F += 50
+
+            elif player_num == 2:
+                # player to the right
+                for i in range(Players[0].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+
+                # player at the top
+                image = pygame.transform.rotate(image, 90)
+                for i in range(Players[3].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    C += 50
+
+                # Player to the left
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[2].getAmountOfCards()):
+                    WIN.blit(image, (E, F))
+                    F += 50
+
+            elif player_num == 3:
+                # player to the right
+                for i in range(Players[1].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+
+                # player at the top
+                image = pygame.transform.rotate(image, 90)
+                for i in range(Players[0].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    C += 50
+
+                # Player to the left
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[3].getAmountOfCards()):
+                    WIN.blit(image, (E, F))
+                    F += 50
+
+            elif player_num == 4:
+                # player to the right
+
+                for i in range(Players[2].getAmountOfCards()):
+                    WIN.blit(image, (A, B))
+                    B += 50
+
+                # player at the top
+                image = pygame.transform.rotate(image, 90)
+                for i in range(Players[0].getAmountOfCards()):
+                    WIN.blit(image, (C, D))
+                    C += 50
+
+                # Player to the left
+                image = pygame.transform.rotate(image, 180)
+                for i in range(Players[1].getAmountOfCards()):
+                    WIN.blit(image, (E, F))
+                    F += 50
 
         # display the deck
         image = pygame.image.load('uno_assets_2d/PNGs/small/card_back.png')
@@ -302,6 +380,3 @@ def display_cards():
         # card = pygame.image.load(top_card.card_file_asset)
 
         pygame.display.update()
-
-        # WIN.blit(card, (500, 100))
-        # display the players deck

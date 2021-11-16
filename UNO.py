@@ -6,7 +6,7 @@ class Player:
         self.deck = deck
 
     def getAvailableCards(self):
-        return (len(self.deck))
+        return (len(self.deck.deck))
 
     def putDownCard(self):
         return self.deck
@@ -18,7 +18,8 @@ class Player:
         self.deck.returnCardFromDeck
 
     def getAmountOfCards(self):
-        return len(self.deck)
+        return len(self.deck.deck)
+
 
 
 class Board:
@@ -70,7 +71,7 @@ class Deck:
         return self.deck.append(card)
 
     def shuffleDeck(self):
-        self.deck = random.shuffle(self.deck)
+        random.shuffle(self.deck)
 
 
 class Card:
