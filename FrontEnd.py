@@ -127,6 +127,49 @@ class button:
         return action
 
 
+
+
+
+
+def draw_card( x, y, img):
+        global clicked
+        action = False
+
+        # Get the position of the mouse
+        pos = pygame.mouse.get_pos()
+
+        card = pygame.image.load(img)
+        # a rectangle in the same spot as the card
+        rect = Rect(x, y, 130, 182)
+        # Check if the card clicked
+        if rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1:
+                clicked = True
+                WIN.blit(card, (x + 10, y + 10))
+
+
+            elif pygame.mouse.get_pressed()[0] == 0 and clicked:
+                clicked = False
+                action = True
+
+            else:
+                WIN.blit(card, (x + 5, y + 5))
+        else:
+            WIN.blit(card, (x , y ))
+
+        return action
+
+
+
+
+
+
+
+
+
+
+
+
 # Create buttons for game intro
 START_BUTTON = button(WIDTH // 2 - 100, HEIGHT // 2 + 200, 'START', GREEN, LIGHT_GREEN, DARK_GREEN)
 
@@ -219,6 +262,8 @@ def display_cards(Players):
             if event.type == pygame.QUIT:
                 sys.exit(0)
 
+
+
         # Display with 2 people
         arrowA = pygame.image.load('uno_assets_2d/PNGs/large/Arrow.png')
         arrowA = pygame.transform.rotate(arrowA, 270)
@@ -226,15 +271,18 @@ def display_cards(Players):
         arrowB = pygame.transform.flip(arrowA, True, True)
         WIN.blit(arrowB, (450, 400))
 
+
+        # USE THE DRAW CARDS FUNCTION HERE
         # print the active players deck of cards
         split = 1500 // Players[player_num - 1].getAmountOfCards()
+        #for i in range(Players[player_num - 1].getAmountOfCards()):
+        #    card = pygame.image.load(Players[player_num].deck.deck[i].cardFileAsset())
+        #   WIN.blit(card, (split, 800))
+        #   split += 150
         for i in range(Players[player_num - 1].getAmountOfCards()):
-            print(Players[player_num].deck.deck[i].getCardColor())
-            print(Players[player_num].deck.deck[i].getCardNumber())
-            card = pygame.image.load(Players[player_num].deck.deck[i].cardFileAsset())
-            WIN.blit(card, (split, 800))
+            card_file = Players[player_num].deck.deck[i].cardFileAsset()
+            draw_card(split, 800, card_file)
             split += 150
-
         # Print the board for only two players playing
         if config.player_headcount == 2:
             image = pygame.transform.flip(image, True, True)

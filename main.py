@@ -35,9 +35,6 @@ while New_game.checkIfWinner() == None :
         players_list.append(playerD)
 
     display_cards(players_list)
-    for i in range(playerA.getAmountOfCards()):
-        print(playerA.deck.deck[i].getCardColor())
-        print(playerA.deck.deck[i].getCardNumber())
 
     # Move to the next players turn, if reverse, move in the other direction
     if reverse:
