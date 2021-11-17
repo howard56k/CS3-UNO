@@ -1,11 +1,10 @@
 from UNO import *
 import config
 from FrontEnd import *
-global player_num
+
 
 # is there a reverse?
 reverse = config.reverse
-
 
 # Opening introduction to the game
 game_intro()
@@ -18,32 +17,57 @@ print(config.player_headcount)
 New_game = Uno(player_headcount, 7)
 
 # Game loop
-while New_game.checkIfWinner() == None :
+discard_Deck = []
+discard_Deck.append(New_game.tableDeck.deck[New_game.tableDeck.getDeckSize()-1])
+New_game.tableDeck.removeFromDeck(New_game.tableDeck.getDeckSize()-1)
 
+players_list = []
+playerA = New_game.listOfPlayers[0]
+players_list.append(playerA)
+playerB = New_game.listOfPlayers[1]
+players_list.append(playerB)
+if player_headcount > 2:
+    playerC = New_game.listOfPlayers[2]
+    players_list.append(playerC)
+if player_headcount > 3:
+    playerD = New_game.listOfPlayers[3]
+    players_list.append(playerD)
+
+while New_game.checkIfWinner() == None :
     # Prompts the first player to get ready for their turn
     ready_menu()
-    players_list = []
-    playerA = New_game.listOfPlayers[0]
-    players_list.append(playerA)
-    playerB = New_game.listOfPlayers[1]
-    players_list.append(playerB)
-    if player_headcount > 2:
-        playerC = New_game.listOfPlayers[2]
-        players_list.append(playerC)
-    if player_headcount > 3:
-        playerD = New_game.listOfPlayers[3]
-        players_list.append(playerD)
-
-    display_cards(players_list)
+    display_cards(players_list, discard_Deck, New_game.board)
 
     # Move to the next players turn, if reverse, move in the other direction
     if reverse:
-        if player_num == 4:
-            player_num = 1
-        else:
-            player_num += 1
+        if player_headcount == 2:
+            if config.player_num == 0:
+                config.player_num = 1
+            elif config.player_num == 1:
+                config.player_num = 0
+        elif player_headcount == 3:
+            if config.player_num == 0:
+                config.player_num = 2
+            else:
+                config.player_num -= 1
+        elif player_headcount == 4:
+            if config.player_num == 0:
+                config.player_num = 3
+            else:
+                config.player_num -= 1
     else:
-        if player_num == 1:
-            player_num = 4
-        else:
-            player_num -= 1
+        if player_headcount == 2:
+            if config.player_num == 0:
+                config.player_num = 1
+            elif config.player_num == 1:
+                config.player_num = 0
+        elif player_headcount == 3:
+            if config.player_num == 2:
+                config.player_num = 0
+            else:
+                config.player_num += 1
+        elif player_headcount == 4:
+            if config.player_num == 3:
+                config.player_num = 0
+            else:
+                config.player_num += 1

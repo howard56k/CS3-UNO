@@ -35,7 +35,7 @@ class Board:
         self.placedDeck.addToDeck(card)
 
     def returnCardFromDeck(self):
-        if len(self.deck) == 0:
+        if len(self.deck.deck) == 0:
             self.deck = random.shuffle(self.placedDeck.deck[:-1])
             self.placedDeck.deck = list(self.placedDeck.deck[-1])
         return self.deck.returnCard()
@@ -92,14 +92,21 @@ class Card:
     def getCardColor(self):
         return self.color
 
+    def setCardNumber(self, number):
+        self.number = number
+
+    def setCardColor(self, color):
+        self.color = color
+
     def cardPlacement(self):
         return self.placement
+
     def isCardPlaceable(self, card):
         if card.special == True:
             return True
         elif card.color == self.color:
             return True
-        elif card.number == card.number:
+        elif card.number == self.number:
             return True
         else:
             return False
