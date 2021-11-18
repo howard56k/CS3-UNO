@@ -136,7 +136,7 @@ class Uno:
         cardColors = ['blue', 'green', 'yellow', 'red']
         cards = []
         for i in range(4):
-            cards.append(Card('color_changer', 'wild',special=True))
+            cards.append(Card('color_changer', 'wild', special=True))
             cards.append(Card('pick_four', 'wild', special=True))
         for cardColor in cardColors:
             for i in range(2):
