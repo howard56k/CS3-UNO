@@ -130,6 +130,10 @@ class Uno:
                 playerDeck.addToDeck(self.allCards.returnCard())
             self.listOfPlayers.append(Player(playerDeck))
         self.tableDeck = self.allCards
+        badStartCards = ['picker','reverse','skip','color_changer','pick_four']
+        while self.tableDeck.deck[len(self.tableDeck.deck)-1].number in badStartCards:
+            print('CAUGHT THE BAD CARDS \n \n \n')
+            self.tableDeck.shuffleDeck()
         self.board = Board(self.listOfPlayers, self.tableDeck)
 
     def generateAllCards(self):
