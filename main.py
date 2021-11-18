@@ -3,8 +3,7 @@ import config
 from FrontEnd import *
 
 
-# is there a reverse?
-reverse = config.reverse
+
 
 # Opening introduction to the game
 game_intro()
@@ -39,7 +38,7 @@ while New_game.checkIfWinner() == None :
     display_cards(players_list, discard_Deck, New_game.board)
 
     # Move to the next players turn, if reverse, move in the other direction
-    if reverse:
+    if config.reverse:
         if player_headcount == 2:
             if config.player_num == 0:
                 config.player_num = 1

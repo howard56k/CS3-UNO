@@ -272,6 +272,7 @@ def display_cards(Players, discardDeck, pickUpPile):
                 sys.exit(0)
 
         # Display the arrows
+
         arrowA = pygame.image.load('uno_assets_2d/PNGs/large/Arrow.png')
         if config.reverse:
             top_Right = pygame.transform.flip(arrowA, True, False)
@@ -279,11 +280,13 @@ def display_cards(Players, discardDeck, pickUpPile):
             WIN.blit(top_Right, (855, 340))
             bottom_Left = pygame.transform.rotate(top_Right, 180)
             WIN.blit(bottom_Left, (540, 540))
+            print("REVERSED = TRUE , Arrows should be reversed")
         else:
             top_Right = pygame.transform.rotate(arrowA, 180)
             WIN.blit(top_Right, (840, 320))
             bottom_Left = pygame.transform.flip(top_Right, True, True)
             WIN.blit(bottom_Left, (550, 560))
+            print("REVERSED = FALSE , Arrows should NOT be reversed")
 
         # display the deck
         image = pygame.image.load('uno_assets_2d/PNGs/small/card_back.png')
@@ -302,7 +305,7 @@ def display_cards(Players, discardDeck, pickUpPile):
         WIN.blit(dispCard, (770, 415))
 
         # print the active players deck of cards
-        split = 1500 // Players[config.player_num].getAmountOfCards()
+        split = 750 - (Players[config.player_num].getAmountOfCards() //2 * 130) - 25
         for i in range(Players[config.player_num].getAmountOfCards()):
             card_file = Players[config.player_num].deck.deck[i].cardFileAsset()
 
@@ -319,13 +322,13 @@ def display_cards(Players, discardDeck, pickUpPile):
                 if discardDeck[len(discardDeck) - 1].isCardPlaceable(Players[config.player_num].deck.deck[i]):
                     print("IM INSIDE THE PLACEABLE LOOP")
                     # if card is reverse
-                    if Players[config.player_num].deck.deck[i].getCardNumber == 'reverse':
+                    if Players[config.player_num].deck.deck[i].getCardNumber() == 'reverse':
 
                         config.reverse = not config.reverse
                         print("TIME TO REVERSE -> ", end="")
                         print(config.reverse)
                     # if card is skip
-                    elif Players[config.player_num].deck.deck[i].getCardNumber == 'skip':
+                    elif Players[config.player_num].deck.deck[i].getCardNumber() == 'skip':
 
                         if config.reverse:
                             if config.player_headcount == 2:
@@ -541,6 +544,9 @@ def display_cards(Players, discardDeck, pickUpPile):
             pygame.display.update()
             sleep(1.5)
             pause = False
+
+        if Players[config.player_num].getAmountOfCards() == 0:
+            loop = False
         pygame.display.update()
 
 # WINNING AND GAME OVER DIALOGUE BOX
