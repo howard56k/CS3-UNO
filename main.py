@@ -15,7 +15,7 @@ while gameLoop:
     player_headcount = config.player_headcount
     print(config.player_headcount)
     # Creates the new game with the amount of players selected above, starting with 7 cards
-    New_game = Uno(player_headcount, 1)
+    New_game = Uno(player_headcount, 3)
 
     # Game loop
     discard_Deck = []
@@ -76,3 +76,4 @@ while gameLoop:
             if (len(players_list[i].deck.deck) == 0):
                 print('WINNER FOUND')
                 gameLoop = winner_screen(players_list)
+                break
