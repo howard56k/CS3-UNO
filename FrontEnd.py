@@ -32,8 +32,10 @@ FPS = 60
 SMALL_FONT = pygame.font.SysFont('franklingothicheavy', 20)
 FONT = pygame.font.SysFont('franklingothicheavy', 40)
 BIG_FONT = pygame.font.SysFont('franklingothicheavy', 60)
+JUMBO_FONT = pygame.font.SysFont('franklinothicheavy', 120)
 clicked = False
 winner = False
+
 
 # How many players there are
 
@@ -240,6 +242,7 @@ def ready_menu():
 
 # Color change prompt box
 def color_change():
+    print ("inside color changer function")
     pygame.draw.rect(WIN, BLACK, pygame.Rect(500, 500, WIDTH//2 - 250, HEIGHT//2 - 250))
     text = BIG_FONT.render("What color do you want to change to?", True, WHITE)
     WIN.blit(text, (500, 300))
@@ -267,6 +270,7 @@ def color_change():
 
 def display_cards(Players, discardDeck, pickUpPile):
     # image = pygame.image.load('uno_assets_2d/PNGs/small/card_back.png')
+    pause = False
     loop = True
     while loop:
         WIN.fill(DARK_RED)
@@ -301,7 +305,6 @@ def display_cards(Players, discardDeck, pickUpPile):
             return 0
 
         # display card at the top of the discard pile
-
         dispCard = pygame.image.load(discardDeck[len(discardDeck) - 1].cardFileAsset())
         WIN.blit(dispCard, (770, 415))
 
@@ -314,26 +317,57 @@ def display_cards(Players, discardDeck, pickUpPile):
             if draw_card(split, 800, card_file):
 
                 # if the card can be placed
-                print(discardDeck[len(discardDeck) - 1].getCardColor(), end = " " )
-                print(discardDeck[len(discardDeck) - 1].getCardNumber())
-                print("is card placeable")
-                print(discardDeck[len(discardDeck) - 1].isCardPlaceable(Players[config.player_num].deck.deck[i]))
-
+                print(Players[config.player_num].deck.deck[i].getCardColor(), end=" ")
+                print(Players[config.player_num].deck.deck[i].getCardNumber())
+                print("is card placeable -> ", end="")
+                print(Players[config.player_num].deck.deck[i].isCardPlaceable(Players[config.player_num].deck.deck[i]))
+                print("is card special -> ", end="")
+                print(Players[config.player_num].deck.deck[i].special)
                 if discardDeck[len(discardDeck) - 1].isCardPlaceable(Players[config.player_num].deck.deck[i]):
-                    print("IM INSIDE THE LOOP")
-                    print(Players[config.player_num].deck.deck[i].getCardColor(), end = " ")
-                    print(Players[config.player_num].deck.deck[i].getCardNumber())
+                    print("IM INSIDE THE PLACEABLE LOOP")
                     # if card is reverse
                     if Players[config.player_num].deck.deck[i].getCardNumber() == 'reverse':
                         config.reverse = not config.reverse
 
+                        config.reverse = not config.reverse
+                        print("TIME TO REVERSE -> ", end="")
+                        print(config.reverse)
                     # if card is skip
                     elif Players[config.player_num].deck.deck[i].getCardNumber() == 'skip':
                         if config.reverse:
-                            config.player_num -= 1
+                            if config.player_headcount == 2:
+                                if config.player_num == 0:
+                                    config.player_num = 0
+                                elif config.player_num == 1:
+                                    config.player_num = 1
+                            elif config.player_headcount == 3:
+                                if config.player_num == 0:
+                                    config.player_num = 2
+                                else:
+                                    config.player_num -= 1
+                            elif config.player_headcount == 4:
+                                if config.player_num == 0:
+                                    config.player_num = 3
+                                else:
+                                    config.player_num -= 1
                         else:
-                            config.player_num += 1
-
+                            if config.player_headcount == 2:
+                                if config.player_num == 0:
+                                    config.player_num = 1
+                                elif config.player_num == 1:
+                                    config.player_num = 0
+                            elif config.player_headcount == 3:
+                                if config.player_num == 2:
+                                    config.player_num = 0
+                                else:
+                                    config.player_num += 1
+                            elif config.player_headcount == 4:
+                                if config.player_num == 3:
+                                    config.player_num = 0
+                                else:
+                                    config.player_num += 1
+                        print("TIME TO SKIP -> next player is ")
+                        print(config.player_num)
                     # if card is plus two
                     elif Players[config.player_num].deck.deck[i].getCardNumber() == 'picker':
                         if config.reverse:
@@ -375,8 +409,10 @@ def display_cards(Players, discardDeck, pickUpPile):
 
                 # Else if the card doesnt match, Create a fading pop up that says that the card does not match - text prompt - card not placeable
                 else:
-                    pass
-                #wrong card pop up
+                    pause = True
+                    #wrong card pop up
+                    text = JUMBO_FONT.render("CARD NOT VALID", True, RED)
+                    WIN.blit(text, (400, 450))
             split += 150
 
         # Print the board for only 2 players playing
@@ -435,79 +471,84 @@ def display_cards(Players, discardDeck, pickUpPile):
 
             if config.player_num == 0:
                 # player to the right
-
+                imageR = pygame.transform.rotate(image, 270)
                 for i in range(Players[3].getAmountOfCards()):
-                    WIN.blit(image, (A, B))
+                    WIN.blit(imageR, (A, B))
                     B += 50
 
                 # player at the top
-                image = pygame.transform.rotate(image, 90)
+                imageT = pygame.transform.rotate(image, 180)
                 for i in range(Players[2].getAmountOfCards()):
-                    WIN.blit(image, (C, D))
+                    WIN.blit(imageT, (C, D))
                     C += 50
 
                 # Player to the left
-                image = pygame.transform.rotate(image, 180)
+                imageL = pygame.transform.rotate(image, 90)
                 for i in range(Players[1].getAmountOfCards()):
-                    WIN.blit(image, (E, F))
+                    WIN.blit(imageL, (E, F))
                     F += 50
 
             elif config.player_num == 1:
                 # player to the right
+                imageR = pygame.transform.rotate(image, 270)
                 for i in range(Players[0].getAmountOfCards()):
-                    WIN.blit(image, (A, B))
+                    WIN.blit(imageR, (A, B))
                     B += 50
 
                 # player at the top
-                image = pygame.transform.rotate(image, 90)
+                imageT = pygame.transform.rotate(image, 180)
                 for i in range(Players[3].getAmountOfCards()):
-                    WIN.blit(image, (C, D))
+                    WIN.blit(imageT, (C, D))
                     C += 50
 
                 # Player to the left
-                image = pygame.transform.rotate(image, 180)
+                imageL = pygame.transform.rotate(image, 270)
                 for i in range(Players[2].getAmountOfCards()):
-                    WIN.blit(image, (E, F))
+                    WIN.blit(imageL, (E, F))
                     F += 50
 
             elif config.player_num == 2:
                 # player to the right
+                imageR = pygame.transform.rotate(image, 270)
                 for i in range(Players[1].getAmountOfCards()):
-                    WIN.blit(image, (A, B))
+                    WIN.blit(imageR, (A, B))
                     B += 50
 
                 # player at the top
-                image = pygame.transform.rotate(image, 90)
+                imageT = pygame.transform.rotate(image, 180)
                 for i in range(Players[0].getAmountOfCards()):
-                    WIN.blit(image, (C, D))
+                    WIN.blit(imageT, (C, D))
                     C += 50
 
                 # Player to the left
-                image = pygame.transform.rotate(image, 180)
+                imageL = pygame.transform.rotate(image, 270)
                 for i in range(Players[3].getAmountOfCards()):
-                    WIN.blit(image, (E, F))
+                    WIN.blit(imageL, (E, F))
                     F += 50
 
             elif config.player_num == 3:
                 # player to the right
-
+                imageR = pygame.transform.rotate(image, 270)
                 for i in range(Players[2].getAmountOfCards()):
-                    WIN.blit(image, (A, B))
+                    WIN.blit(imageR, (A, B))
                     B += 50
 
                 # player at the top
-                image = pygame.transform.rotate(image, 90)
+                imageT = pygame.transform.rotate(image, 180)
                 for i in range(Players[0].getAmountOfCards()):
-                    WIN.blit(image, (C, D))
+                    WIN.blit(imageT, (C, D))
                     C += 50
 
                 # Player to the left
-                image = pygame.transform.rotate(image, 180)
+                imageL = pygame.transform.rotate(image, 270)
                 for i in range(Players[1].getAmountOfCards()):
-                    WIN.blit(image, (E, F))
+                    WIN.blit(imageL, (E, F))
                     F += 50
 
-
+        if pause:
+            pygame.display.update()
+            sleep(1.5)
+            pause = False
         pygame.display.update()
 
 # WINNING AND GAME OVER DIALOGUE BOX

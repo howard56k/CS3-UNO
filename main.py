@@ -14,7 +14,7 @@ game_menu()
 player_headcount = config.player_headcount
 print(config.player_headcount)
 # Creates the new game with the amount of players selected above, starting with 7 cards
-New_game = Uno(player_headcount, 7)
+New_game = Uno(player_headcount, 6)
 
 # Game loop
 discard_Deck = []
