@@ -6,7 +6,7 @@ from UNO import *
 from time import sleep
 
 pygame.init()
-print(pygame.font.get_fonts())
+#print(pygame.font.get_fonts())
 # Important Global Variables
 WIDTH, HEIGHT = 1500, 1000
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -215,7 +215,17 @@ def game_menu():
         pygame.display.update()
 
 GO_BUTTON = button(WIDTH // 2 - 100, HEIGHT // 2, 'GO!', GREEN, LIGHT_GREEN, DARK_GREEN)
-
+def getAddCardToplay():
+    addCardToplay = None
+    if config.reverse:
+        addCardToplay = config.player_num - 1
+        if (addCardToplay) == (-1):
+            addCardToplay = config.player_num + config.player_headcount
+    else:
+        addCardToplay = config.player_num + 1
+        if (addCardToplay) == (config.player_headcount):
+            addCardToplay = 0
+    return addCardToplay
 # Prompts the player to be ready to play
 def ready_menu():
     intro = True
@@ -243,29 +253,30 @@ def ready_menu():
 # Color change prompt box
 def color_change():
     print ("inside color changer function")
-    pygame.draw.rect(WIN, BLACK, pygame.Rect(500, 500, WIDTH//2 - 250, HEIGHT//2 - 250))
-    text = BIG_FONT.render("What color do you want to change to?", True, WHITE)
-    WIN.blit(text, (500, 300))
-    RED_BUTTON = button(600, 400, "RED", RED, LIGHT_RED, DARK_RED)
-    BLUE_BUTTON = button(600, 800 , "BLUE", BLUE, LIGHT_BLUE, DARK_BLUE)
-    GREEN_BUTTON = button(800, 400 , "GREEN", GREEN, LIGHT_GREEN, DARK_GREEN)
-    YELLOW_BUTTON = button(800, 800, "YELLOW", YELLOW, LIGHT_YELLOW, DARK_YELLOW)
-    notClick = True
-    while notClick:
+    intro = True
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
+        WIN.fill(DARK_RED)
+        pygame.draw.rect(WIN, DARK_RED, pygame.Rect(500, 500, WIDTH//2 - 250, HEIGHT//2 - 250))
+        text = FONT.render("What color do you want to change to?", True, WHITE)
+        WIN.blit(text, (500, 300))
+        RED_BUTTON = button(600, 400, "RED", RED, LIGHT_RED, DARK_RED)
+        BLUE_BUTTON = button(600, 800 , "BLUE", BLUE, LIGHT_BLUE, DARK_BLUE)
+        GREEN_BUTTON = button(800, 400 , "GREEN", GREEN, LIGHT_GREEN, DARK_GREEN)
+        YELLOW_BUTTON = button(800, 800, "YELLOW", YELLOW, LIGHT_YELLOW, DARK_YELLOW)
+        
         if RED_BUTTON.draw_button():
-            notClick = False
             return "red"
         elif BLUE_BUTTON.draw_button():
-            notClick = False
             return "blue"
         elif GREEN_BUTTON.draw_button():
-            notClick = False
             return "green"
         elif YELLOW_BUTTON.draw_button():
-            notClick = False
             return "yellow"
-    print('HERE')
-    pygame.display.update()
+        pygame.display.update()
+    
 
 
 def display_cards(Players, discardDeck, pickUpPile):
@@ -310,6 +321,10 @@ def display_cards(Players, discardDeck, pickUpPile):
 
         # print the active players deck of cards
         split = 1500 // Players[config.player_num].getAmountOfCards()
+        #CHECKS IF CARD IS 1 AND IF SO DOES PLACEMENT AS IF THERE IS 2 CARDS
+        if Players[config.player_num].getAmountOfCards() == 1:
+            split = split = 1500 // 2
+
         for i in range(Players[config.player_num].getAmountOfCards()):
             card_file = Players[config.player_num].deck.deck[i].cardFileAsset()
 
@@ -326,6 +341,8 @@ def display_cards(Players, discardDeck, pickUpPile):
                 if discardDeck[len(discardDeck) - 1].isCardPlaceable(Players[config.player_num].deck.deck[i]):
                     print("IM INSIDE THE PLACEABLE LOOP")
                     # if card is reverse
+                    addCardToplay = getAddCardToplay()
+                    oldPlayNum = None
                     if Players[config.player_num].deck.deck[i].getCardNumber() == 'reverse':
                         config.reverse = not config.reverse
 
@@ -334,6 +351,7 @@ def display_cards(Players, discardDeck, pickUpPile):
                         print(config.reverse)
                     # if card is skip
                     elif Players[config.player_num].deck.deck[i].getCardNumber() == 'skip':
+                        oldPlayNum = config.player_num
                         if config.reverse:
                             if config.player_headcount == 2:
                                 if config.player_num == 0:
@@ -370,12 +388,10 @@ def display_cards(Players, discardDeck, pickUpPile):
                         print(config.player_num)
                     # if card is plus two
                     elif Players[config.player_num].deck.deck[i].getCardNumber() == 'picker':
-                        if config.reverse:
-                            Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
-                            Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
-                        else:
-                            Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
-                            Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
+                        Players[addCardToplay].addCard(pickUpPile.returnCardFromDeck())
+                        Players[addCardToplay].addCard(pickUpPile.returnCardFromDeck())
+
+                        
 
                     # if card is special
                     elif Players[config.player_num].deck.deck[i].special:
@@ -383,30 +399,27 @@ def display_cards(Players, discardDeck, pickUpPile):
                         print("IS SPECIAL")
                         if Players[config.player_num].deck.deck[i].getCardNumber() == 'pick_four':
                             print('FOUR')
-                            if config.reverse:
-                                Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
-                                Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
-                                Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
-                                Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
-                            else:
-                                Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
-                                Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
-                                Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
-                                Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
+                            Players[addCardToplay].addCard(pickUpPile.returnCardFromDeck())
+                            Players[addCardToplay].addCard(pickUpPile.returnCardFromDeck())
+                            Players[addCardToplay].addCard(pickUpPile.returnCardFromDeck())
+                            Players[addCardToplay].addCard(pickUpPile.returnCardFromDeck())
                             #function that prompts color change
                             tempColor = color_change()
-                            #sleep(20)
                             Players[config.player_num].deck.deck[i].setCardColor(tempColor)
 
                         # If the card is a color changer
                         elif Players[config.player_num].deck.deck[i].getCardNumber() == 'color_changer':
                             tempColor = color_change()
-                            #sleep(20)
                             Players[config.player_num].deck.deck[i].setCardColor(tempColor)
-                    discardDeck.append(Players[config.player_num].deck.deck[i])
-                    Players[config.player_num].deck.removeFromDeck(i)
+                    if oldPlayNum == None:
+                        discardDeck.append(Players[config.player_num].deck.deck[i])
+                        Players[config.player_num].deck.removeFromDeck(i)
+                    else:
+                        discardDeck.append(Players[oldPlayNum].deck.deck[i])
+                        Players[oldPlayNum].deck.removeFromDeck(i)
                     return 0
 
+                    
                 # Else if the card doesnt match, Create a fading pop up that says that the card does not match - text prompt - card not placeable
                 else:
                     pause = True
@@ -552,3 +565,26 @@ def display_cards(Players, discardDeck, pickUpPile):
         pygame.display.update()
 
 # WINNING AND GAME OVER DIALOGUE BOX
+RESTARTGAME = button(WIDTH // 2 - 100, HEIGHT // 2, "Restart", GREY, LIGHT_GREY, DARK_GREY)
+QUITGAME = button(WIDTH // 2 + 200, HEIGHT // 2, "Quit", GREY, LIGHT_GREY, DARK_GREY)
+def winner_screen(players_list):
+    winnerPlayerNum = None
+    for i in range(len(players_list)):
+        if len(players_list[i].deck.deck) == 0:
+            winnerPlayerNum = i+1
+    print('WInnerPlayer Num: {}'.format(winnerPlayerNum))
+    intro = True
+    while intro:
+        WIN.fill(WHITE)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
+
+        text = FONT.render('Congratulations Player {} on Your UNO Victory'.format(winnerPlayerNum), True, BLACK)
+        WIN.blit(text, (WIDTH // 2-500, HEIGHT // 2 - 250))
+        if RESTARTGAME.draw_button():
+            return True
+        if QUITGAME.draw_button():
+            sys.exit(0)
+
+        pygame.display.update()
