@@ -237,6 +237,7 @@ def ready_menu():
 
         pygame.display.update()
 
+
 # Color change prompt box
 def color_change():
     pygame.draw.rect(WIN, BLACK, pygame.Rect(500, 500, WIDTH//2 - 250, HEIGHT//2 - 250))
@@ -246,15 +247,21 @@ def color_change():
     BLUE_BUTTON = button(600, 800 , "BLUE", BLUE, LIGHT_BLUE, DARK_BLUE)
     GREEN_BUTTON = button(800, 400 , "GREEN", GREEN, LIGHT_GREEN, DARK_GREEN)
     YELLOW_BUTTON = button(800, 800, "YELLOW", YELLOW, LIGHT_YELLOW, DARK_YELLOW)
-    if RED_BUTTON.draw_button():
-        return "red"
-    elif BLUE_BUTTON.draw_button():
-        return "blue"
-    elif GREEN_BUTTON.draw_button():
-        return "green"
-    elif YELLOW_BUTTON.draw_button():
-        return "yellow"
-
+    notClick = True
+    while notClick:
+        if RED_BUTTON.draw_button():
+            notClick = False
+            return "red"
+        elif BLUE_BUTTON.draw_button():
+            notClick = False
+            return "blue"
+        elif GREEN_BUTTON.draw_button():
+            notClick = False
+            return "green"
+        elif YELLOW_BUTTON.draw_button():
+            notClick = False
+            return "yellow"
+    print('HERE')
     pygame.display.update()
 
 
@@ -317,18 +324,18 @@ def display_cards(Players, discardDeck, pickUpPile):
                     print(Players[config.player_num].deck.deck[i].getCardColor(), end = " ")
                     print(Players[config.player_num].deck.deck[i].getCardNumber())
                     # if card is reverse
-                    if Players[config.player_num].deck.deck[i].getCardNumber == 'reverse':
+                    if Players[config.player_num].deck.deck[i].getCardNumber() == 'reverse':
                         config.reverse = not config.reverse
 
                     # if card is skip
-                    elif Players[config.player_num].deck.deck[i].getCardNumber == 'skip':
+                    elif Players[config.player_num].deck.deck[i].getCardNumber() == 'skip':
                         if config.reverse:
                             config.player_num -= 1
                         else:
                             config.player_num += 1
 
                     # if card is plus two
-                    elif Players[config.player_num].deck.deck[i].getCardNumber == 'picker':
+                    elif Players[config.player_num].deck.deck[i].getCardNumber() == 'picker':
                         if config.reverse:
                             Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
                             Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
@@ -337,9 +344,11 @@ def display_cards(Players, discardDeck, pickUpPile):
                             Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
 
                     # if card is special
-                    elif discardDeck[len(discardDeck) - 1].special:
+                    elif Players[config.player_num].deck.deck[i].special:
                         #if the card played is a plus four
-                        if Players[config.player_num].deck.deck[i].getCardNumber == 'pick_four':
+                        print("IS SPECIAL")
+                        if Players[config.player_num].deck.deck[i].getCardNumber() == 'pick_four':
+                            print('FOUR')
                             if config.reverse:
                                 Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
                                 Players[config.player_num - 1].addCard(pickUpPile.returnCardFromDeck())
@@ -351,11 +360,15 @@ def display_cards(Players, discardDeck, pickUpPile):
                                 Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
                                 Players[config.player_num + 1].addCard(pickUpPile.returnCardFromDeck())
                             #function that prompts color change
-                            Players[config.player_num].deck.deck[i].setCardColor(color_change())
+                            tempColor = color_change()
+                            #sleep(20)
+                            Players[config.player_num].deck.deck[i].setCardColor(tempColor)
 
                         # If the card is a color changer
-                        elif Players[config.player_num].deck.deck[i].getCardNumber == 'color_changer':
-                            Players[config.player_num].deck.deck[i].setCardColor(color_change())
+                        elif Players[config.player_num].deck.deck[i].getCardNumber() == 'color_changer':
+                            tempColor = color_change()
+                            #sleep(20)
+                            Players[config.player_num].deck.deck[i].setCardColor(tempColor)
                     discardDeck.append(Players[config.player_num].deck.deck[i])
                     Players[config.player_num].deck.removeFromDeck(i)
                     return 0
